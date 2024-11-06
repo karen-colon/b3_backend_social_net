@@ -13,7 +13,7 @@
     "REST",
     "MERN"
   ],
-  "author": "KAREN STEFFANY COLON CARABALLO",
+  "author": "Inés María Oliveros Hernández",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

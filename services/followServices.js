@@ -4,8 +4,7 @@ import Follow from "../models/follows.js";
 
 // Definición de la función followUserIds
 export const followUserIds = async (userId) => {
-  // Lógica para obtener los IDs de los usuarios que sigue el usuario
-  const following = await Follow.find({ following_user: userId }).select({ followed_user: 1, _id: 0 }).exec();
+  
   return following.map(follow => follow.followed_user);
 };
 

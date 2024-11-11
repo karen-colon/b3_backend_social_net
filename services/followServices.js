@@ -72,13 +72,7 @@ export const getFollowStatus = async (userId, profileUserId) => {
       throw new Error("Los IDs de los usuarios son inválidos o están faltando");
     }
 
-    // Verificar si el usuario autenticado sigue al usuario del perfil
-    const isFollowing = await Follow.findOne({ following_user: userId, followed_user: profileUserId });
-
-    // Verificar si el usuario del perfil sigue al usuario autenticado
-    const isFollower = await Follow.findOne({ following_user: profileUserId, followed_user: userId });
-
-    return {
+       return {
       following: isFollowing !== null,  // Si encuentra un registro, está siguiendo
       follower: isFollower !== null     // Si encuentra un registro, lo están siguiendo
     };

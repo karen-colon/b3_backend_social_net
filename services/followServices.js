@@ -1,71 +1,71 @@
 import Follow from "../models/follows.js";
 
-// Obtenemos dos arrays de IDs de usuarios que yo sigo (following) y que me siguen (followers)
-export const followUserIds = async (req, res) => {
+// Get arrays of IDs for users the authenticated user is following and users who follow the authenticated user
+export const getFollowUserIds = async (req, res) => {
   try {
-    // Obtener el ID del usuario autenticado
-    const identityUserId = req.user.userId;
+    // Obtain the authenticated user's ID
+    const userId = req.user.userId;
 
-    // En caso de no llegar el userID
-    if(!identityUserId) {
-      return res.status(400).send({
+    // Check if the user ID is available
+    if (!userId) {
+      return res.status(400).json({
         status: "error",
-        message: "Usuario no recibido"
+        message: "User ID not received"
       });
     }
 
-    // Obtener el array con la información de los usuarios que estoy siguiendo (el usuario autenticado está siguiendo)
-    let following = await Follow.find({ "following_user": identityUserId})
-      .select({"followed_user": 1, "_id": 0})
+    // Retrieve IDs of users the authenticated user is following
+    const following = await Follow.find({ following_user: userId })
+      .select({ followed_user: 1, _id: 0 })
       .exec();
 
-    // Obtener el array con la información de los usuarios que me siguen a mi (los usuarios que siguen al usuario autenticado)
-    let followers = await Follow.find({ "followed_user": identityUserId})
-      .select({"following_user": 1, "_id": 0})
+    // Retrieve IDs of users who are following the authenticated user
+    const followers = await Follow.find({ followed_user: userId })
+      .select({ following_user: 1, _id: 0 })
       .exec();
 
-    // Procesar array de identificadores: convertirlos en un array de solo IDS
-    const user_following = following.map(follow => follow.followed_user);
-    const user_follow_me = followers.map(follow => follow.following_user);
+    // Map results to arrays of IDs
+    const followingIds = following.map(follow => follow.followed_user);
+    const followerIds = followers.map(follow => follow.following_user);
 
-    return {
-      following: user_following,
-      followers: user_follow_me
-    }
+    return res.status(200).json({
+      following: followingIds,
+      followers: followerIds
+    });
 
   } catch (error) {
-    // devuelve un objeto vacío
-    return {
+    console.error("Error retrieving follow user IDs:", error);
+    return res.status(500).json({
       following: [],
       followers: []
-    };
+    });
   }
-}
+};
 
-// Obtenemos los datos de UN usuario que me está siguiendo a mi o que yo sigo
-export const followThisUser = async (identityUserId, profileUserId) => {
+// Get follow status between authenticated user and a specific profile user
+export const getFollowStatus = async (userId, profileUserId) => {
   try {
-    //Verificar si los IDs son válidos
-    if(!identityUserId || !profileUserId)
-      throw new Error("IDs de los usuarios son inválidos");
+    // Validate that both user IDs are provided
+    if (!userId || !profileUserId) {
+      throw new Error("User IDs are invalid or missing");
+    }
 
-    // Consultar si yo como usuario identificado (identityUserId) sigo al otro usuario (profileUserId)
-    const following = await Follow.findOne({"following_user": identityUserId, "followed_user": profileUserId});
+    // Check if the authenticated user is following the profile user
+    const isFollowing = await Follow.findOne({ following_user: userId, followed_user: profileUserId });
 
-    // Consultar si el otro usuario (profileUserId) me sigue a mi o al usuario autenticado (identityUserId)
-    const follower = await Follow.findOne({"following_user": profileUserId, "followed_user": identityUserId});
+    // Check if the profile user is following the authenticated user
+    const isFollower = await Follow.findOne({ following_user: profileUserId, followed_user: userId });
 
     return {
-      following,
-      follower
-    }
+      following: isFollowing !== null,
+      follower: isFollower !== null
+    };
 
   } catch (error) {
-    console.log("Error al obtener la información del usuario.", error);
-    // devuelve null si no se siguen
+    console.error("Error retrieving follow status:", error);
     return {
-      following: null,
-      follower: null
-    }
+      following: false,
+      follower: false
+    };
   }
-}
+};

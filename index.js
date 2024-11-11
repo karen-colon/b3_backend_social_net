@@ -1,4 +1,4 @@
-// Importar dependencias (configurar en package.json)
+// Import dependencies (ensure they are configured in package.json)
 import express from "express";
 import connection from "./database/connection.js";
 import cors from "cors";
@@ -7,18 +7,17 @@ import UserRoutes from "./routes/users.js";
 import PublicationRoutes from "./routes/publications.js";
 import FollowRoutes from "./routes/follows.js";
 
+// Log a welcome message to confirm the API is running
+console.log("Node API is running");
 
-// Mensaje de Bienvenida para verificare ejecutó la API de Node
-console.log("API Node en ejecución");
-
-// Usar la conexión a la Base de Datos
+// Establish database connection
 connection();
 
-// Crear el servidor Node
+// Initialize Express server
 const app = express();
-const puerto = process.env.PORT || 3900;
+const port = process.env.PORT || 3900;
 
-// Configurar cors para que acepte peticiones del frontend
+// Configure CORS to allow requests from the frontend
 app.use(cors({
   origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -26,19 +25,18 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-// Decodificar los datos desde los formularios para convertirlos en objetos de JavaScript
+// Middleware to parse incoming request data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configurar rutas del aplicativo (módulos)
+// Configure application routes (modules)
 app.use('/api/user', UserRoutes);
 app.use('/api/publication', PublicationRoutes);
 app.use('/api/follow', FollowRoutes);
 
-// Configurar el servidor de Node
-app.listen(puerto, () => {
-  console.log("Servidor de Node ejecutándose en el puerto", puerto);
+// Start the server and listen on the specified port
+app.listen(port, () => {
+  console.log(`Node server running on port ${port}`);
 });
 
 export default app;
-

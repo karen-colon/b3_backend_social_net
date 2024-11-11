@@ -2,23 +2,23 @@ import jwt from 'jwt-simple';
 import moment from 'moment';
 import dotenv from 'dotenv';
 
-// Cargar variables de entorno desde el archivo .env
+// Load environment variables from .env file
 dotenv.config();
 
-// Clave secreta
+// Secret key for JWT encoding
 const secret = process.env.SECRET_KEY;
 
-// Método para generar tokens
-// Unix: segundos transcurridos desde el 1 de enero de 1970 hasta hoy.
+// Function to create JWT token
+// Unix time: seconds since January 1, 1970
 const createToken = (user) => {
   const payload = {
     userId: user._id,
     role: user.role,
-    iat: moment().unix(), // fecha de emisión
-    exp: moment().add(7, 'days').unix() // fecha de expiración
-  }
+    iat: moment().unix(), // Issue date
+    exp: moment().add(7, 'days').unix() // Expiration date (7 days from now)
+  };
 
-  // Devolver el jwt token codificado
+  // Return the encoded JWT token
   return jwt.encode(payload, secret);
 };
 

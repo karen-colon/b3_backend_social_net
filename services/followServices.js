@@ -1,18 +1,18 @@
+// services/followServices.js
+
 import Follow from "../models/follows.js";
 
-// Función para obtener los IDs de los usuarios que sigue y a los que sigue el usuario autenticado
-export const getFollowUserIds = async (req, res) => {
-  try {
-    // Obtener el ID del usuario autenticado
-    const userId = req.user.userId;
+// Definición de la función followUserIds
+export const followUserIds = async (userId) => {
+  // Lógica para obtener los IDs de los usuarios que sigue el usuario
+  const following = await Follow.find({ following_user: userId }).select({ followed_user: 1, _id: 0 }).exec();
+  return following.map(follow => follow.followed_user);
+};
 
-    // Verificar si el ID del usuario está disponible
-    if (!userId) {
-      return res.status(400).json({
-        status: "error",
-        message: "No se ha recibido el ID del usuario"
-      });
-    }
+// Exportar otras funciones necesarias
+export const followThisUser = (userId, targetUserId) => {
+  // Implementación de la función followThisUser
+};
 
     // Recuperar los IDs de los usuarios que sigue el usuario autenticado
     const following = await Follow.find({ following_user: userId })

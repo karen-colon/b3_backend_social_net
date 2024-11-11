@@ -29,3 +29,12 @@ FollowSchema.plugin(mongoosePaginate);
 
 // Export the Follow model
 export default model("Follow", FollowSchema, "follows");
+// followServices.js
+
+export const followThisUser = (userId, followedId) => {
+  // Tu lógica para seguir a un usuario
+};
+
+export const followUserIds = (userId) => {
+  // Tu lógica para obtener los IDs de los usuarios seguidos
+};

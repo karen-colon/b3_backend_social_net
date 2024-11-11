@@ -1,18 +1,9 @@
-// services/followServices.js
-
 import Follow from "../models/follows.js";
 
- // Asegúrate de que las funciones estén exportadas correctamente
-export const followThisUser = (userId, targetUserId) => {
-  // Implementación de la función
-};
-
-export const followUserIds = (userId) => {
-  // Implementación de la función
-};
-
+// Función para obtener los IDs de los usuarios que sigue y a los que sigue el usuario autenticado
+export const getFollowUserIds = async (req, res) => {
   try {
-    // Obtener el ID del usuario autenticado desde el middleware de autenticación
+    // Obtener el ID del usuario autenticado
     const userId = req.user.userId;
 
     // Verificar si el ID del usuario está disponible
@@ -25,19 +16,19 @@ export const followUserIds = (userId) => {
 
     // Recuperar los IDs de los usuarios que sigue el usuario autenticado
     const following = await Follow.find({ following_user: userId })
-      .select({ followed_user: 1, _id: 0 }) // Solo traer los IDs de los usuarios seguidos
+      .select({ followed_user: 1, _id: 0 })
       .exec();
 
     // Recuperar los IDs de los usuarios que siguen al usuario autenticado
     const followers = await Follow.find({ followed_user: userId })
-      .select({ following_user: 1, _id: 0 }) // Solo traer los IDs de los seguidores
+      .select({ following_user: 1, _id: 0 })
       .exec();
 
     // Mapear los resultados a arrays de IDs
     const followingIds = following.map(follow => follow.followed_user);
     const followerIds = followers.map(follow => follow.following_user);
 
-    // Enviar respuesta con los arrays de IDs de los usuarios seguidos y seguidores
+    // Enviar la respuesta con los arrays de IDs
     return res.status(200).json({
       following: followingIds,
       followers: followerIds
@@ -49,8 +40,34 @@ export const followUserIds = (userId) => {
       following: [],
       followers: []
     });
-    
   }
+};
+
+// Función para seguir a otro usuario
+export const followThisUser = async (userId, targetUserId) => {
+  try {
+    // Comprobar si ya existe un registro de seguimiento
+    const existingFollow = await Follow.findOne({ following_user: userId, followed_user: targetUserId });
+
+    if (existingFollow) {
+      throw new Error("Ya estás siguiendo a este usuario.");
+    }
+
+    // Crear un nuevo registro de seguimiento
+    const newFollow = new Follow({
+      following_user: userId,
+      followed_user: targetUserId
+    });
+
+    // Guardar el seguimiento
+    await newFollow.save();
+    return { success: true, message: "Ahora estás siguiendo al usuario." };
+
+  } catch (error) {
+    console.error("Error al seguir al usuario:", error);
+    return { success: false, message: error.message };
+  }
+};
 
 // Función para obtener el estado de seguimiento entre dos usuarios
 export const getFollowStatus = async (userId, profileUserId) => {
@@ -66,10 +83,9 @@ export const getFollowStatus = async (userId, profileUserId) => {
     // Verificar si el usuario del perfil sigue al usuario autenticado
     const isFollower = await Follow.findOne({ following_user: profileUserId, followed_user: userId });
 
-    // Retornar el estado de seguimiento
     return {
-      following: isFollowing !== null,  // Si encuentra un registro, es que está siguiendo
-      follower: isFollower !== null     // Si encuentra un registro, es que lo están siguiendo
+      following: isFollowing !== null,  // Si encuentra un registro, está siguiendo
+      follower: isFollower !== null     // Si encuentra un registro, lo están siguiendo
     };
 
   } catch (error) {
@@ -78,6 +94,5 @@ export const getFollowStatus = async (userId, profileUserId) => {
       following: false,
       follower: false
     };
-    
   }
 };

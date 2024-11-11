@@ -1,12 +1,9 @@
 import { Schema, model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-// In controllers/user.js
+// Importing functions from followServices.js (ES Modules)
 import { followThisUser, followUserIds } from '../services/followServices.js';
 
-
 // Define the user schema with enhanced validation, structure, and improved design
-const { followThisUser, followUserIds } = require('../services/followServices.js');
-
 const UserSchema = new Schema({
   name: {
     type: String,

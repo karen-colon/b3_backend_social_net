@@ -1,16 +1,30 @@
 import { connect } from "mongoose";
 import dotenv from "dotenv";
 
-// Configurar el dotenv para usar variables de entorno
+// Load environment variables from .env file
 dotenv.config();
 
-const connection = async() => {
+// Function to establish MongoDB connection
+const connection = async () => {
   try {
-    await connect(process.env.MONGODB_URI);
-    console.log("Conectado correctamente a DB_Social_Network");
+    // Ensure MongoDB URI is available in environment variables
+    const mongoURI = process.env.MONGODB_URI;
+    if (!mongoURI) {
+      throw new Error("MongoDB URI is not defined in environment variables.");
+    }
+
+    // Connect to the MongoDB database
+    await connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log("Successfully connected to DB_Social_Network");
+
   } catch (error) {
-    console.log("Error al conectar la BD", error);
-    throw new Error("¡No se ha podido conectar a la base de datos!");
+    // Log the error and throw a more descriptive message
+    console.error("Error while connecting to the database:", error.message);
+    throw new Error("Failed to connect to the database. Please check the connection details.");
   }
 };
 

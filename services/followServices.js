@@ -9,10 +9,7 @@ export const followUserIds = async (userId) => {
   return following.map(follow => follow.followed_user);
 };
 
-// Exportar otras funciones necesarias
-export const followThisUser = (userId, targetUserId) => {
-  // Implementación de la función followThisUser
-};
+
 
     // Recuperar los IDs de los usuarios que sigue el usuario autenticado
     const following = await Follow.find({ following_user: userId })
@@ -28,18 +25,16 @@ export const followThisUser = (userId, targetUserId) => {
     const followingIds = following.map(follow => follow.followed_user);
     const followerIds = followers.map(follow => follow.following_user);
 
-    // Enviar la respuesta con los arrays de IDs
+  // Esto es correcto
+export const someFunction = async (req, res) => {
+  try {
+    // Lógica aquí
     return res.status(200).json({
-      following: followingIds,
-      followers: followerIds
+      message: "Success"
     });
-
   } catch (error) {
-    console.error("Error al recuperar los IDs de usuarios:", error);
-    return res.status(500).json({
-      following: [],
-      followers: []
-    });
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Error" });
   }
 };
 

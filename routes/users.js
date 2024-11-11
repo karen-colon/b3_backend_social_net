@@ -140,5 +140,5 @@ mongoose.connect('mongodb://localhost:27017/rsocial', { useNewUrlParser: true, u
 app.use('/api', responseRoutes);
 
 app.listen(5000, () => {
-    console.log('Servidor corriendo en http://localhost:5173');
+    console.log('Servidor corriendo en mongodb://localhost:27017/rsocial');
 });

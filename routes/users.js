@@ -123,6 +123,7 @@ router.get("/counters/:id?", ensureAuth, counters);
 // Export the router for use in the main app
 export default router;
 
+require('dotenv').config(); // Cargar las variables de entorno
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -131,14 +132,16 @@ const app = express();
 
 app.use(express.json()); // Para parsear JSON
 
-// Conectar a la base de datos MongoDB
-mongoose.connect('mongodb://localhost:27017/rsocial', { useNewUrlParser: true, useUnifiedTopology: true })
+// Conectar a la base de datos MongoDB usando la URL de la variable de entorno
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Conectado a MongoDB'))
     .catch((err) => console.error('Error al conectar a MongoDB:', err));
 
 // Usar las rutas
 app.use('/api', responseRoutes);
 
-app.listen(5000, () => {
-    console.log('Servidor corriendo en mongodb://localhost:27017/rsocial');
+// Usar el puerto definido en la variable de entorno, con 3900 como valor predeterminado
+const port = process.env.PORT || 3900;
+app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
 });

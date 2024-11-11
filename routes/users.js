@@ -100,8 +100,5 @@ router.get("/counters/:id?", ensureAuth, counters);
 
 // Export the router for use in the main app
 export default router;
-// En controllers/user.js
-export const counters = () => {
-  // lógica para la función counters
-};
+
 

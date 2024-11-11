@@ -204,3 +204,8 @@ export const avatar = async (req, res) => {
   }
 };
 
+// Lógica de contadores
+export const counters = (req, res) => {
+  // Lógica para la función counters
+  res.status(200).json({ message: "Contadores" });
+};

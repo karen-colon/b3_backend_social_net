@@ -2,10 +2,12 @@
 
 import Follow from "../models/follows.js";
 
-// Exportar las funciones usando export
+// Función para obtener los IDs de usuarios que un usuario sigue y los que lo siguen
 export const getFollowUserIds = async (req, res) => {
+
+  
   try {
-    // Obtener el ID del usuario autenticado
+    // Obtener el ID del usuario autenticado desde el middleware de autenticación
     const userId = req.user.userId;
 
     // Verificar si el ID del usuario está disponible
@@ -18,18 +20,19 @@ export const getFollowUserIds = async (req, res) => {
 
     // Recuperar los IDs de los usuarios que sigue el usuario autenticado
     const following = await Follow.find({ following_user: userId })
-      .select({ followed_user: 1, _id: 0 })
+      .select({ followed_user: 1, _id: 0 }) // Solo traer los IDs de los usuarios seguidos
       .exec();
 
     // Recuperar los IDs de los usuarios que siguen al usuario autenticado
     const followers = await Follow.find({ followed_user: userId })
-      .select({ following_user: 1, _id: 0 })
+      .select({ following_user: 1, _id: 0 }) // Solo traer los IDs de los seguidores
       .exec();
 
     // Mapear los resultados a arrays de IDs
     const followingIds = following.map(follow => follow.followed_user);
     const followerIds = followers.map(follow => follow.following_user);
 
+    // Enviar respuesta con los arrays de IDs de los usuarios seguidos y seguidores
     return res.status(200).json({
       following: followingIds,
       followers: followerIds
@@ -44,7 +47,7 @@ export const getFollowUserIds = async (req, res) => {
   }
 };
 
-// Exportar la segunda función
+// Función para obtener el estado de seguimiento entre dos usuarios
 export const getFollowStatus = async (userId, profileUserId) => {
   try {
     // Validar que ambos IDs de usuario están proporcionados
@@ -58,9 +61,10 @@ export const getFollowStatus = async (userId, profileUserId) => {
     // Verificar si el usuario del perfil sigue al usuario autenticado
     const isFollower = await Follow.findOne({ following_user: profileUserId, followed_user: userId });
 
+    // Retornar el estado de seguimiento
     return {
-      following: isFollowing !== null,
-      follower: isFollower !== null
+      following: isFollowing !== null,  // Si encuentra un registro, es que está siguiendo
+      follower: isFollower !== null     // Si encuentra un registro, es que lo están siguiendo
     };
 
   } catch (error) {

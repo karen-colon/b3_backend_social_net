@@ -2,14 +2,9 @@
 
 import Follow from "../models/follows.js";
 
-// Definición de la función followUserIds
+// Función para obtener los IDs de los usuarios que sigue el usuario autenticado
 export const followUserIds = async (userId) => {
-  
-  return following.map(follow => follow.followed_user);
-};
-
-
-
+  try {
     // Recuperar los IDs de los usuarios que sigue el usuario autenticado
     const following = await Follow.find({ following_user: userId })
       .select({ followed_user: 1, _id: 0 })
@@ -24,16 +19,10 @@ export const followUserIds = async (userId) => {
     const followingIds = following.map(follow => follow.followed_user);
     const followerIds = followers.map(follow => follow.following_user);
 
-  // Esto es correcto
-export const someFunction = async (req, res) => {
-  try {
-    // Lógica aquí
-    return res.status(200).json({
-      message: "Success"
-    });
+    return { followingIds, followerIds };
   } catch (error) {
-    console.error("Error:", error);
-    return res.status(500).json({ message: "Error" });
+    console.error("Error al recuperar los seguimientos:", error);
+    throw new Error("Error al recuperar los seguimientos");
   }
 };
 
@@ -71,16 +60,34 @@ export const getFollowStatus = async (userId, profileUserId) => {
       throw new Error("Los IDs de los usuarios son inválidos o están faltando");
     }
 
-       return {
+    // Verificar si el usuario está siguiendo al otro
+    const isFollowing = await Follow.findOne({ following_user: userId, followed_user: profileUserId });
+
+    // Verificar si el usuario es seguido por el otro
+    const isFollower = await Follow.findOne({ following_user: profileUserId, followed_user: userId });
+
+    return {
       following: isFollowing !== null,  // Si encuentra un registro, está siguiendo
       follower: isFollower !== null     // Si encuentra un registro, lo están siguiendo
     };
-
   } catch (error) {
     console.error("Error al recuperar el estado de seguimiento:", error);
     return {
       following: false,
       follower: false
     };
+  }
+};
+
+// Función ejemplo para probar
+export const someFunction = async (req, res) => {
+  try {
+    // Lógica aquí
+    return res.status(200).json({
+      message: "Success"
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Error" });
   }
 };

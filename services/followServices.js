@@ -1,30 +1,32 @@
+// services/followServices.js
+
 import Follow from "../models/follows.js";
 
-// Get arrays of IDs for users the authenticated user is following and users who follow the authenticated user
+// Exportar las funciones usando export
 export const getFollowUserIds = async (req, res) => {
   try {
-    // Obtain the authenticated user's ID
+    // Obtener el ID del usuario autenticado
     const userId = req.user.userId;
 
-    // Check if the user ID is available
+    // Verificar si el ID del usuario está disponible
     if (!userId) {
       return res.status(400).json({
         status: "error",
-        message: "User ID not received"
+        message: "No se ha recibido el ID del usuario"
       });
     }
 
-    // Retrieve IDs of users the authenticated user is following
+    // Recuperar los IDs de los usuarios que sigue el usuario autenticado
     const following = await Follow.find({ following_user: userId })
       .select({ followed_user: 1, _id: 0 })
       .exec();
 
-    // Retrieve IDs of users who are following the authenticated user
+    // Recuperar los IDs de los usuarios que siguen al usuario autenticado
     const followers = await Follow.find({ followed_user: userId })
       .select({ following_user: 1, _id: 0 })
       .exec();
 
-    // Map results to arrays of IDs
+    // Mapear los resultados a arrays de IDs
     const followingIds = following.map(follow => follow.followed_user);
     const followerIds = followers.map(follow => follow.following_user);
 
@@ -34,7 +36,7 @@ export const getFollowUserIds = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error retrieving follow user IDs:", error);
+    console.error("Error al recuperar los IDs de usuarios:", error);
     return res.status(500).json({
       following: [],
       followers: []
@@ -42,18 +44,18 @@ export const getFollowUserIds = async (req, res) => {
   }
 };
 
-// Get follow status between authenticated user and a specific profile user
+// Exportar la segunda función
 export const getFollowStatus = async (userId, profileUserId) => {
   try {
-    // Validate that both user IDs are provided
+    // Validar que ambos IDs de usuario están proporcionados
     if (!userId || !profileUserId) {
-      throw new Error("User IDs are invalid or missing");
+      throw new Error("Los IDs de los usuarios son inválidos o están faltando");
     }
 
-    // Check if the authenticated user is following the profile user
+    // Verificar si el usuario autenticado sigue al usuario del perfil
     const isFollowing = await Follow.findOne({ following_user: userId, followed_user: profileUserId });
 
-    // Check if the profile user is following the authenticated user
+    // Verificar si el usuario del perfil sigue al usuario autenticado
     const isFollower = await Follow.findOne({ following_user: profileUserId, followed_user: userId });
 
     return {
@@ -62,7 +64,7 @@ export const getFollowStatus = async (userId, profileUserId) => {
     };
 
   } catch (error) {
-    console.error("Error retrieving follow status:", error);
+    console.error("Error al recuperar el estado de seguimiento:", error);
     return {
       following: false,
       follower: false

@@ -2,10 +2,15 @@
 
 import Follow from "../models/follows.js";
 
-// Función para obtener los IDs de usuarios que un usuario sigue y los que lo siguen
-export const getFollowUserIds = async (req, res) => {
+ // Asegúrate de que las funciones estén exportadas correctamente
+export const followThisUser = (userId, targetUserId) => {
+  // Implementación de la función
+};
 
-  
+export const followUserIds = (userId) => {
+  // Implementación de la función
+};
+
   try {
     // Obtener el ID del usuario autenticado desde el middleware de autenticación
     const userId = req.user.userId;
@@ -44,8 +49,8 @@ export const getFollowUserIds = async (req, res) => {
       following: [],
       followers: []
     });
+    
   }
-};
 
 // Función para obtener el estado de seguimiento entre dos usuarios
 export const getFollowStatus = async (userId, profileUserId) => {
@@ -73,5 +78,6 @@ export const getFollowStatus = async (userId, profileUserId) => {
       following: false,
       follower: false
     };
+    
   }
 };

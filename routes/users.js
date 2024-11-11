@@ -1,21 +1,60 @@
 import { Router } from "express";
-import { followThisUser, followUserIds } from '../services/followServices.js';
-import { 
-  testUser, 
-  register, 
-  login, 
-  profile, 
-  listUsers, 
-  updateUser, 
-  uploadAvatar, 
-  avatar, 
-  counters 
-} from "../controllers/user.js";
-import { ensureAuth } from "../middlewares/auth.js";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import pkg from "cloudinary";
 const { v2: cloudinary } = pkg;
+
+import { ensureAuth } from "../middlewares/auth.js";
+import { followThisUser, followUserIds } from '../services/followServices.js';
+
+// Define your controller functions here
+const testUser = (req, res) => {
+  res.json({ message: "User test successful!" });
+};
+
+const register = (req, res) => {
+  // Implement registration logic here
+  res.json({ message: "User registered successfully!" });
+};
+
+const login = (req, res) => {
+  // Implement login logic here
+  res.json({ message: "User logged in successfully!" });
+};
+
+const profile = (req, res) => {
+  const userId = req.params.id;
+  // Implement logic to get user profile by ID
+  res.json({ userId, message: "User profile fetched successfully!" });
+};
+
+const listUsers = (req, res) => {
+  const page = req.params.page || 1;
+  // Implement logic to list users, maybe with pagination
+  res.json({ page, message: "Users listed successfully!" });
+};
+
+const updateUser = (req, res) => {
+  // Implement logic to update user details
+  res.json({ message: "User updated successfully!" });
+};
+
+const uploadAvatar = (req, res) => {
+  // Implement logic to upload avatar
+  res.json({ message: "Avatar uploaded successfully!" });
+};
+
+const avatar = (req, res) => {
+  const userId = req.params.id;
+  // Implement logic to fetch avatar by user ID
+  res.json({ userId, message: "User avatar fetched successfully!" });
+};
+
+const counters = (req, res) => {
+  const userId = req.params.id;
+  // Implement logic to fetch counters (followers/following)
+  res.json({ userId, followers: 10, following: 5, message: "Counters fetched successfully!" });
+};
 
 const router = Router();
 
@@ -43,39 +82,26 @@ const uploads = multer({
 });
 
 // Define user-related routes with enhanced documentation
-/**
- * Test user route to check user endpoint functionality
- */
+
+// Test user route
 router.get("/test-user", ensureAuth, testUser);
 
-/**
- * Route to register a new user
- */
+// Register route
 router.post("/register", register);
 
-/**
- * Route to log in an existing user
- */
+// Login route
 router.post("/login", login);
 
-/**
- * Route to retrieve a user profile by ID
- */
+// Profile route
 router.get("/profile/:id", ensureAuth, profile);
 
-/**
- * Route to list users with optional pagination
- */
+// List users route
 router.get("/list/:page?", ensureAuth, listUsers);
 
-/**
- * Route to update user details
- */
+// Update user route
 router.put("/update", ensureAuth, updateUser);
 
-/**
- * Route to upload an avatar image for the user
- */
+// Avatar upload route
 router.post("/upload-avatar", ensureAuth, uploads.single("file0"), (req, res) => {
   try {
     uploadAvatar(req, res);
@@ -88,17 +114,11 @@ router.post("/upload-avatar", ensureAuth, uploads.single("file0"), (req, res) =>
   }
 });
 
-/**
- * Route to retrieve an avatar by user ID
- */
+// Avatar retrieval route
 router.get("/avatar/:id", avatar);
 
-/**
- * Route to get follower/following counters by user ID
- */
+// Counters route
 router.get("/counters/:id?", ensureAuth, counters);
 
 // Export the router for use in the main app
 export default router;
-
-

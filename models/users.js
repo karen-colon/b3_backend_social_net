@@ -1,6 +1,9 @@
 import { Schema, model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-import { followThisUser, followUserIds } from '../services/followServices.js';
+import { followThisUser, followUserIds } from '../services/followServices.js';  // Asegúrate de que el nombre sea correcto
+
+// Resto del código en users.js...
+
 
 // Define the user schema with enhanced validation, structure, and improved design
 const UserSchema = new Schema({

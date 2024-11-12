@@ -2,29 +2,23 @@ import jwt from 'jwt-simple';
 import moment from 'moment';
 import dotenv from 'dotenv';
 
-// Load environment variables from .env file
+// Cargar variables de entorno desde el archivo .env
 dotenv.config();
 
-// Validate presence of secret key
+// Clave secreta
 const secret = process.env.SECRET_KEY;
-if (!secret) {
-  throw new Error("SECRET_KEY is not defined in the environment variables");
-}
 
-// Function to create JWT token
+// Método para generar tokens
+// Unix: segundos transcurridos desde el 1 de enero de 1970 hasta hoy.
 const createToken = (user) => {
-  if (!user || !user._id || !user.role) {
-    throw new Error("User data is incomplete for token generation");
-  }
-
   const payload = {
     userId: user._id,
     role: user.role,
-    iat: moment().unix(), // Issue date in Unix time
-    exp: moment().add(7, 'days').unix() // Expiration date (7 days from now)
-  };
+    iat: moment().unix(), // fecha de emisión
+    exp: moment().add(7, 'days').unix() // fecha de expiración
+  }
 
-  // Return the encoded JWT token
+  // Devolver el jwt token codificado
   return jwt.encode(payload, secret);
 };
 

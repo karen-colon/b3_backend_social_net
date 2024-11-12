@@ -1,28 +1,11 @@
 {
-    // Configuración para excluir archivos y directorios innecesarios del explorador de archivos
     "files.exclude": {
-        // Excluir el directorio .git (control de versiones)
         "**/.git": true,
-        
-        // Excluir el directorio .svn (control de versiones Subversion)
         "**/.svn": true,
-        
-        // Excluir el directorio .hg (control de versiones Mercurial)
         "**/.hg": true,
-        
-        // Excluir el directorio CVS (control de versiones clásico)
         "**/CVS": true,
-        
-        // Excluir archivos específicos del sistema operativo MacOS
         "**/.DS_Store": true,
-        
-        // Excluir archivos generados por Thumbs.db (miniaturas de Windows)
         "**/Thumbs.db": true,
-        
-        // Excluir directorios relacionados con MuleSoft
         ".mule": true
-    },
-
-    // Puedes agregar más configuraciones personalizadas aquí
-    // por ejemplo, para ocultar carpetas de compilación o caché de tu proyecto.
+    }
 }

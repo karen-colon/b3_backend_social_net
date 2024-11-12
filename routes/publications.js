@@ -1,79 +1,38 @@
 import { Router } from "express";
-import { 
-  testPublication, 
-  savePublication, 
-  showPublication, 
-  deletePublication, 
-  publicationsUser, 
-  uploadMedia, 
-  showMedia, 
-  feed 
-} from "../controllers/publication.js";
-import { ensureAuth } from "../middlewares/auth.js";
+import { testPublication, savePublication, showPublication, deletePublication, publicationsUser, uploadMedia, showMedia, feed } from "../controllers/publication.js";
+import { ensureAuth } from '../middlewares/auth.js';
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import pkg from "cloudinary";
+import pkg from 'cloudinary';
 const { v2: cloudinary } = pkg;
 
-const router = Router();
-
-// Configure Cloudinary storage for file uploads
+// Configuración de subida de archivos en Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "publications",
-    allowed_formats: ["jpg", "png", "jpeg", "gif"], // Allowed file formats
-    public_id: (req, file) => `publication-${Date.now()}`
+    folder: 'publications',
+    allowedFormats: ['jpg', 'png', 'jpeg', 'gif'],  // formatos permitidos
+    public_id: (req, file) => 'publication-' + Date.now()
   }
 });
 
-// Configure multer with file size limit (1 MB)
+// Configurar multer con límites de tamaño de archivos
 const uploads = multer({
   storage: storage,
-  limits: { fileSize: 1 * 1024 * 1024 }, // Limit size to 1 MB
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image files are allowed!"), false);
-    }
-  }
+  limits: { fileSize: 1 * 1024 * 1024 } // Limitar tamaño a 1 MB
 });
 
-// Define publication routes with descriptive comments
-// Test route for publication functionality
-router.get("/test-publication", ensureAuth, testPublication);
+const router = Router();
 
-// Route to create a new publication
-router.post("/new-publication", ensureAuth, savePublication);
+// Definir rutas de publication
+router.get('/test-publication', ensureAuth, testPublication );
+router.post('/new-publication', ensureAuth, savePublication);
+router.get('/show-publication/:id', ensureAuth, showPublication);
+router.delete('/delete-publication/:id', ensureAuth, deletePublication);
+router.get('/publications-user/:id/:page?', ensureAuth, publicationsUser);
+router.post('/upload-media/:id', [ensureAuth, uploads.single("file0")], uploadMedia);
+router.get('/media/:id', showMedia);
+router.get('/feed/:page?', ensureAuth, feed);
 
-// Route to display a specific publication by ID
-router.get("/show-publication/:id", ensureAuth, showPublication);
-
-// Route to delete a specific publication by ID
-router.delete("/delete-publication/:id", ensureAuth, deletePublication);
-
-// Route to retrieve all publications by a specific user with optional pagination
-router.get("/publications-user/:id/:page?", ensureAuth, publicationsUser);
-
-// Route to upload media for a specific publication
-router.post("/upload-media/:id", [ensureAuth, uploads.single("file0")], (req, res) => {
-  try {
-    uploadMedia(req, res);
-  } catch (error) {
-    res.status(400).json({
-      status: "error",
-      message: "File upload failed",
-      error: error.message
-    });
-  }
-});
-
-// Route to serve uploaded media by ID
-router.get("/media/:id", showMedia);
-
-// Route to retrieve a paginated feed of publications
-router.get("/feed/:page?", ensureAuth, feed);
-
-// Export Router
+//Exportar el Router
 export default router;

@@ -1,46 +1,47 @@
 import jwt from 'jwt-simple';
 import moment from 'moment';
-import { secret } from '../services/jwt.js'; // Importing secret key for JWT verification
+import { secret } from '../services/jwt.js'; // Importar la clave secreta
 
-// Authentication middleware to protect routes
+
+
+// Método de autenticación
 export const ensureAuth = (req, res, next) => {
-  // Check if the authorization header exists
-  const authorizationHeader = req.headers.authorization;
-  if (!authorizationHeader) {
-    return res.status(403).json({
+
+  // Comprobar si llega la cabecera de autenticación
+  if(!req.headers.authorization) {
+    return res.status(403).send({
       status: "error",
-      message: "Authorization header missing"
+      message: "La petición no tiene la cabacera de autenticación"
     });
   }
 
-  // Extract and clean the token (remove unnecessary quotes and prefix 'Bearer')
-  const token = authorizationHeader.replace(/['"]+/g, '').replace("Bearer ", "");
+  // Limpiar el token y quitar comillas i las hay
+  const token = req.headers.authorization.replace(/['"]+/g, '').replace("Bearer ", "");
 
   try {
-    // Decode the JWT token
-    const payload = jwt.decode(token, secret);
+    // Decodificar el token
+    let payload = jwt.decode(token, secret);
 
-    // Check if the token has expired
-    if (payload.exp <= moment().unix()) {
-      return res.status(401).json({
+    // Comprobar si el token ha expirado (si la fecha de expiraci´pon es más antigua que la fecha actual)
+    if(payload.exp <= moment.unix()){
+      return res.status(401).send({
         status: "error",
-        message: "Token has expired"
+        message: "El token ha expirado"
       });
     }
 
-    // Attach the user information to the request object for further use
+    // Agregar datos del usuario a la request
     req.user = payload;
 
   } catch (error) {
-    // Catch any decoding or validation errors
-    return res.status(400).json({
+    return res.status(404).send({
       status: "error",
-      message: "Invalid token"
+      message: "El token no es válido"
     });
   }
 
-  // Proceed to the next middleware or route handler
+  // Paso a ejecución al siguiente método
   next();
-};
 
+};
 

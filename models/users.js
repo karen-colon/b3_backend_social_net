@@ -1,32 +1,23 @@
 import { Schema, model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-import { followThisUser, followUserIds } from '../services/followServices.js';
 
-
-// Define the user schema with enhanced validation, structure, and improved design
+// Definir el esquema del usuario
 const UserSchema = new Schema({
   name: {
     type: String,
     required: [true, "El nombre es obligatorio"],
-    trim: true,
-    maxlength: [50, "El nombre no puede superar los 50 caracteres"],
-    match: [/^[a-zA-ZÀ-ÿ\s]+$/, "El nombre solo puede contener letras y espacios"]
+    trim: true
   },
   last_name: {
     type: String,
     required: [true, "El apellido es obligatorio"],
-    trim: true,
-    maxlength: [50, "El apellido no puede superar los 50 caracteres"],
-    match: [/^[a-zA-ZÀ-ÿ\s]+$/, "El apellido solo puede contener letras y espacios"]
+    trim: true
   },
   nick: {
     type: String,
     required: [true, "El nombre de usuario es obligatorio"],
     unique: true,
-    trim: true,
-    minlength: [3, "El nombre de usuario debe tener al menos 3 caracteres"],
-    maxlength: [30, "El nombre de usuario no puede superar los 30 caracteres"],
-    match: [/^[\w.-]+$/, "El nombre de usuario solo puede contener letras, números, puntos y guiones"]
+    trim: true
   },
   email: {
     type: String,
@@ -38,8 +29,7 @@ const UserSchema = new Schema({
   },
   bio: {
     type: String,
-    trim: true,
-    maxlength: [300, "La biografía no puede superar los 300 caracteres"]
+    trim: true
   },
   password: {
     type: String,
@@ -53,19 +43,15 @@ const UserSchema = new Schema({
   },
   image: {
     type: String,
-    default: "default_user.png",
-    match: [/^.*\.(jpg|jpeg|png|gif)$/, "Formato de imagen no válido"]
+    default: "default_user.png"
   },
   created_at: {
     type: Date,
     default: Date.now
   }
-}, {
-  timestamps: true // Automatically add createdAt and updatedAt fields
 });
 
-// Pagination plugin for easier user list management
+// Configurar el plugin de paginación de Mongoose
 UserSchema.plugin(mongoosePaginate);
 
-// Export the User model
 export default model("User", UserSchema, "users");
